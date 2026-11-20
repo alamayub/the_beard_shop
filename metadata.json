@@ -1,0 +1,6 @@
+{
+  "name": "The Beard Shop — Luxury Unisex Salon & Management System",
+  "description": "Premium unisex beauty salon, grooming atelier, online booking platform, and management dashboard inspired by Birgunj, Madhesh Province, Nepal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

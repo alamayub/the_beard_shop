@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-obsidian: #2A0810;
+  --color-obsidian-soft: #3B0C18;
+  --color-maroon: #6B1222;
+  --color-maroon-hover: #88182C;
+  --color-crimson: #9E1F32;
+  --color-crimson-bright: #B8293E;
+  --color-ivory: #FAF8F4;
+  --color-ivory-deep: #F4ECEE;
+  --color-sand: #EFE1E4;
+  --color-champagne: #9E1F32;
+  --color-champagne-dark: #6B1222;
+  --color-charcoal: #2A1216;
+  --color-muted: #5C4B4E;
+  --color-hairline: #E6DADC;
+}
+
+:root {
+  --background: #FAF8F4;
+  --foreground: #2A1216;
+  --card: #FFFFFF;
+  --card-foreground: #2A1216;
+  --popover: #FFFFFF;
+  --popover-foreground: #2A1216;
+  --primary: #6B1222;
+  --primary-foreground: #FAF8F4;
+  --secondary: #EFE1E4;
+  --secondary-foreground: #2A0810;
+  --muted: #F5EBED;
+  --muted-foreground: #5C4B4E;
+  --accent: #9E1F32;
+  --accent-foreground: #FAF8F4;
+  --destructive: #B91C1C;
+  --destructive-foreground: #FFFFFF;
+  --border: #E6DADC;
+  --input: #DCCBD0;
+  --ring: #9E1F32;
+  --radius: 0.375rem;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    background-color: var(--background);
+    color: var(--foreground);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  body {
+    overflow-x: clip;
+    selection-background-color: #6B1222;
+  }
+
+  ::selection {
+    background-color: #6B1222;
+    color: #FAF8F4;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-serif);
+    text-wrap: balance;
+    font-feature-settings: "liga" 1, "kern" 1;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
