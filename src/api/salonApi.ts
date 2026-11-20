@@ -1,4 +1,21 @@
 import { baseApi } from './baseApi';
+import {
+  FALLBACK_BLOG_POSTS,
+  FALLBACK_BOOTSTRAP,
+  FALLBACK_CATEGORIES,
+  FALLBACK_HOLIDAYS,
+  FALLBACK_OFFERS,
+  FALLBACK_REVIEWS,
+  FALLBACK_SERVICES,
+  FALLBACK_SETTINGS,
+  FALLBACK_SOCIAL_POSTS,
+  FALLBACK_TEAM,
+  computeFallbackAvailability,
+  getFallbackBlogBySlug,
+  getFallbackGallery,
+  getFallbackServiceBySlug,
+  getFallbackServices,
+} from '../data/fallbackSalonData';
 import type {
   AuthUser,
   AvailabilityResponse,
@@ -20,75 +37,169 @@ import type {
 export const publicSalonApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBootstrap: builder.query<BootstrapResponse, void>({
-      query: () => '/bootstrap',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/bootstrap');
+        if (res.error || !res.data) {
+          return { data: FALLBACK_BOOTSTRAP };
+        }
+        const live = res.data as BootstrapResponse;
+        return {
+          data: {
+            settings: live.settings || FALLBACK_SETTINGS,
+            categories: live.categories?.length ? live.categories : FALLBACK_CATEGORIES,
+            services: live.services?.length ? live.services : FALLBACK_SERVICES,
+            team: live.team?.length ? live.team : FALLBACK_TEAM,
+            gallery: live.gallery?.length ? live.gallery : FALLBACK_BOOTSTRAP.gallery,
+            socialPosts: live.socialPosts?.length ? live.socialPosts : FALLBACK_SOCIAL_POSTS,
+            blogPosts: live.blogPosts?.length ? live.blogPosts : FALLBACK_BLOG_POSTS,
+            offers: live.offers?.length ? live.offers : FALLBACK_OFFERS,
+            reviews: live.reviews?.length ? live.reviews : FALLBACK_REVIEWS,
+            holidays: live.holidays?.length ? live.holidays : FALLBACK_HOLIDAYS,
+          },
+        };
+      },
       providesTags: ['Bootstrap', 'Settings', 'Services', 'Categories', 'Team', 'Gallery', 'Offers', 'Reviews'],
     }),
     getSettings: builder.query<SalonSettings | null, void>({
-      query: () => '/settings',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/settings');
+        if (res.error || !res.data) {
+          return { data: FALLBACK_SETTINGS };
+        }
+        return { data: res.data as SalonSettings };
+      },
       providesTags: ['Settings'],
     }),
     getCategories: builder.query<ServiceCategory[], void>({
-      query: () => '/categories',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/categories');
+        const rows = !res.error && Array.isArray(res.data) ? (res.data as ServiceCategory[]) : [];
+        return { data: rows.length > 0 ? rows : FALLBACK_CATEGORIES };
+      },
       providesTags: ['Categories'],
     }),
     getServices: builder.query<SalonService[], { category?: string; q?: string } | void>({
-      query: (params) => {
+      async queryFn(params, _api, _extraOptions, fetchWithBQ) {
         const search = new URLSearchParams();
         if (params?.category) search.set('category', params.category);
         if (params?.q) search.set('q', params.q);
         const qs = search.toString();
-        return `/services${qs ? `?${qs}` : ''}`;
+        const res = await fetchWithBQ(`/services${qs ? `?${qs}` : ''}`);
+        if (res.error || !Array.isArray(res.data)) {
+          return { data: getFallbackServices(params || undefined) };
+        }
+        const rows = res.data as SalonService[];
+        // Only fall back when unfiltered request is empty or backend failed; preserve empty search hits when DB has data
+        if (rows.length === 0 && !params?.q && (!params?.category || params.category === 'all')) {
+          return { data: getFallbackServices(params || undefined) };
+        }
+        return { data: rows };
       },
       providesTags: ['Services'],
     }),
     getServiceBySlug: builder.query<SalonService, string>({
-      query: (slug) => `/services/${slug}`,
+      async queryFn(slug, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ(`/services/${slug}`);
+        if (!res.error && res.data) {
+          return { data: res.data as SalonService };
+        }
+        const fallback = getFallbackServiceBySlug(slug);
+        if (fallback) return { data: fallback };
+        return { error: res.error || { status: 404, data: { error: 'Service not found' } } };
+      },
       providesTags: ['Services'],
     }),
     getGallery: builder.query<GalleryItem[], string | void>({
-      query: (category) => `/gallery${category && category !== 'ALL' ? `?category=${category}` : ''}`,
+      async queryFn(category, _api, _extraOptions, fetchWithBQ) {
+        const url = `/gallery${category && category !== 'ALL' ? `?category=${category}` : ''}`;
+        const res = await fetchWithBQ(url);
+        if (res.error || !Array.isArray(res.data)) {
+          return { data: getFallbackGallery(category || undefined) };
+        }
+        const rows = res.data as GalleryItem[];
+        if (rows.length === 0 && (!category || category === 'ALL')) {
+          return { data: getFallbackGallery(category || undefined) };
+        }
+        return { data: rows };
+      },
       providesTags: ['Gallery'],
     }),
     getTeam: builder.query<StaffMember[], void>({
-      query: () => '/team',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/team');
+        const rows = !res.error && Array.isArray(res.data) ? (res.data as StaffMember[]) : [];
+        return { data: rows.length > 0 ? rows : FALLBACK_TEAM };
+      },
       providesTags: ['Team'],
     }),
     getSocialPosts: builder.query<SocialPost[], void>({
-      query: () => '/social-posts',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/social-posts');
+        const rows = !res.error && Array.isArray(res.data) ? (res.data as SocialPost[]) : [];
+        return { data: rows.length > 0 ? rows : FALLBACK_SOCIAL_POSTS };
+      },
       providesTags: ['SocialPosts'],
     }),
     getBlogPosts: builder.query<BlogPost[], void>({
-      query: () => '/blog',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/blog');
+        const rows = !res.error && Array.isArray(res.data) ? (res.data as BlogPost[]) : [];
+        return { data: rows.length > 0 ? rows : FALLBACK_BLOG_POSTS };
+      },
       providesTags: ['Blog'],
     }),
     getBlogBySlug: builder.query<BlogPost, string>({
-      query: (slug) => `/blog/${slug}`,
+      async queryFn(slug, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ(`/blog/${slug}`);
+        if (!res.error && res.data) {
+          return { data: res.data as BlogPost };
+        }
+        const fallback = getFallbackBlogBySlug(slug);
+        if (fallback) return { data: fallback };
+        return { error: res.error || { status: 404, data: { error: 'Article not found' } } };
+      },
       providesTags: ['Blog'],
     }),
     getOffers: builder.query<SalonOffer[], void>({
-      query: () => '/offers',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/offers');
+        const rows = !res.error && Array.isArray(res.data) ? (res.data as SalonOffer[]) : [];
+        return { data: rows.length > 0 ? rows : FALLBACK_OFFERS };
+      },
       providesTags: ['Offers'],
     }),
     getReviews: builder.query<SalonReview[], void>({
-      query: () => '/reviews',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/reviews');
+        const rows = !res.error && Array.isArray(res.data) ? (res.data as SalonReview[]) : [];
+        return { data: rows.length > 0 ? rows : FALLBACK_REVIEWS };
+      },
       providesTags: ['Reviews'],
     }),
     getHolidays: builder.query<SalonHoliday[], void>({
-      query: () => '/holidays',
+      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ('/holidays');
+        const rows = !res.error && Array.isArray(res.data) ? (res.data as SalonHoliday[]) : [];
+        return { data: rows.length > 0 ? rows : FALLBACK_HOLIDAYS };
+      },
       providesTags: ['Holidays'],
     }),
     getAvailability: builder.query<
       AvailabilityResponse,
       { date: string; serviceIds: number[]; staffId?: number | null; excludeBookingId?: number }
     >({
-      query: ({ date, serviceIds, staffId, excludeBookingId }) => {
+      async queryFn({ date, serviceIds, staffId, excludeBookingId }, _api, _extraOptions, fetchWithBQ) {
         const params = new URLSearchParams({
           date,
           serviceIds: serviceIds.join(','),
         });
         if (staffId) params.set('staffId', String(staffId));
         if (excludeBookingId) params.set('excludeBookingId', String(excludeBookingId));
-        return `/bookings/availability?${params.toString()}`;
+        const res = await fetchWithBQ(`/bookings/availability?${params.toString()}`);
+        if (res.error || !res.data) {
+          return { data: computeFallbackAvailability({ date, serviceIds, staffId }) };
+        }
+        return { data: res.data as AvailabilityResponse };
       },
       providesTags: ['Bookings'],
     }),

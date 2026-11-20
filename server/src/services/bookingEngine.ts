@@ -81,6 +81,7 @@ export interface SlotAvailabilityResult {
   date: string;
   timezone: string;
   isPastDate?: boolean;
+  isClosedDay?: boolean;
   isHoliday: boolean;
   holidayName?: string;
   totalDurationMinutes: number;
@@ -154,6 +155,7 @@ async function computeAvailabilityWithExecutor(
     return {
       date: params.date,
       timezone: NEPAL_TIMEZONE,
+      isClosedDay: true,
       isHoliday: false,
       totalDurationMinutes,
       slots: [],

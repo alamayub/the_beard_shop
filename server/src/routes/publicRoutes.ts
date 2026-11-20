@@ -26,6 +26,24 @@ import {
   rescheduleBookingTransaction,
 } from '../services/bookingEngine.ts';
 import { initiatePaymentSession, verifyOnlinePayment } from '../services/paymentService.ts';
+import {
+  FALLBACK_BLOG_POSTS,
+  FALLBACK_BOOTSTRAP,
+  FALLBACK_CATEGORIES,
+  FALLBACK_GALLERY,
+  FALLBACK_HOLIDAYS,
+  FALLBACK_OFFERS,
+  FALLBACK_REVIEWS,
+  FALLBACK_SERVICES,
+  FALLBACK_SETTINGS,
+  FALLBACK_SOCIAL_POSTS,
+  FALLBACK_TEAM,
+  computeFallbackAvailability,
+  getFallbackBlogBySlug,
+  getFallbackGallery,
+  getFallbackServiceBySlug,
+  getFallbackServices,
+} from '../../../src/data/fallbackSalonData.ts';
 
 const router = Router();
 
@@ -54,7 +72,11 @@ const contactSchema = z.object({
 });
 
 router.use(async (_req, _res, next) => {
-  await ensureSeeded();
+  try {
+    await ensureSeeded();
+  } catch (err) {
+    console.warn('Database seed check skipped; fallback data enabled:', err);
+  }
   next();
 });
 
@@ -113,30 +135,30 @@ router.get('/bootstrap', async (_req, res) => {
     ]);
 
     return res.json({
-      settings: settingsRows[0] || null,
-      categories: cats,
-      services: svcs,
-      team: teamRows,
-      gallery: galleryRows,
-      socialPosts: socialRows,
-      blogPosts: blogRows,
-      offers: offerRows,
-      reviews: reviewRows,
-      holidays: holidayRows,
+      settings: settingsRows[0] || FALLBACK_SETTINGS,
+      categories: cats.length > 0 ? cats : FALLBACK_CATEGORIES,
+      services: svcs.length > 0 ? svcs : FALLBACK_SERVICES,
+      team: teamRows.length > 0 ? teamRows : FALLBACK_TEAM,
+      gallery: galleryRows.length > 0 ? galleryRows : FALLBACK_GALLERY,
+      socialPosts: socialRows.length > 0 ? socialRows : FALLBACK_SOCIAL_POSTS,
+      blogPosts: blogRows.length > 0 ? blogRows : FALLBACK_BLOG_POSTS,
+      offers: offerRows.length > 0 ? offerRows : FALLBACK_OFFERS,
+      reviews: reviewRows.length > 0 ? reviewRows : FALLBACK_REVIEWS,
+      holidays: holidayRows.length > 0 ? holidayRows : FALLBACK_HOLIDAYS,
     });
   } catch (error) {
-    console.error('Bootstrap fetch failed:', error);
-    return res.status(500).json({ error: 'Unable to load salon data. Please try again.' });
+    console.warn('Bootstrap DB fetch failed, serving fallback salon data:', error);
+    return res.json(FALLBACK_BOOTSTRAP);
   }
 });
 
 router.get('/settings', async (_req, res) => {
   try {
     const rows = await db.select().from(salonSettings).limit(1);
-    return res.json(rows[0] || null);
+    return res.json(rows[0] || FALLBACK_SETTINGS);
   } catch (error) {
-    console.error('Settings fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load salon settings.' });
+    console.warn('Settings DB fetch failed, serving fallback settings:', error);
+    return res.json(FALLBACK_SETTINGS);
   }
 });
 
@@ -147,27 +169,32 @@ router.get('/categories', async (_req, res) => {
       .from(serviceCategories)
       .where(eq(serviceCategories.isPublished, true))
       .orderBy(asc(serviceCategories.sortOrder));
-    return res.json(rows);
+    return res.json(rows.length > 0 ? rows : FALLBACK_CATEGORIES);
   } catch (error) {
-    console.error('Categories fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load categories.' });
+    console.warn('Categories DB fetch failed, serving fallback categories:', error);
+    return res.json(FALLBACK_CATEGORIES);
   }
 });
 
 router.get('/services', async (req, res) => {
+  const categorySlug = typeof req.query.category === 'string' ? req.query.category : '';
+  const search = typeof req.query.q === 'string' ? req.query.q.trim().toLowerCase() : '';
   try {
-    const categorySlug = typeof req.query.category === 'string' ? req.query.category : '';
-    const search = typeof req.query.q === 'string' ? req.query.q.trim().toLowerCase() : '';
-
     const allCategories = await db.select().from(serviceCategories);
     const catById: Record<number, (typeof allCategories)[number]> = {};
     for (const c of allCategories) catById[c.id] = c;
 
-    let rows = await db
+    const allPublished = await db
       .select()
       .from(services)
       .where(eq(services.isPublished, true))
       .orderBy(asc(services.sortOrder));
+
+    if (allPublished.length === 0) {
+      return res.json(getFallbackServices({ category: categorySlug, q: search }));
+    }
+
+    let rows = allPublished;
 
     if (categorySlug && categorySlug !== 'all') {
       const targetCat = allCategories.find((c) => c.slug === categorySlug);
@@ -192,8 +219,8 @@ router.get('/services', async (req, res) => {
       }))
     );
   } catch (error) {
-    console.error('Services fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load services.' });
+    console.warn('Services DB fetch failed, serving fallback services:', error);
+    return res.json(getFallbackServices({ category: categorySlug, q: search }));
   }
 });
 
@@ -206,6 +233,8 @@ router.get('/services/:slug', async (req, res) => {
       .limit(1);
 
     if (rows.length === 0) {
+      const fallback = getFallbackServiceBySlug(req.params.slug);
+      if (fallback) return res.json(fallback);
       return res.status(404).json({ error: 'Service not found' });
     }
     const cat = await db
@@ -220,36 +249,44 @@ router.get('/services/:slug', async (req, res) => {
       categorySlug: cat[0]?.slug || 'other-services',
     });
   } catch (error) {
-    console.error('Service detail fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load service details.' });
+    console.warn('Service detail DB fetch failed, checking fallback:', error);
+    const fallback = getFallbackServiceBySlug(req.params.slug);
+    if (fallback) return res.json(fallback);
+    return res.status(404).json({ error: 'Service not found' });
   }
 });
 
 router.get('/gallery', async (req, res) => {
+  const category = typeof req.query.category === 'string' ? req.query.category : '';
   try {
-    const category = typeof req.query.category === 'string' ? req.query.category : '';
-    let rows = await db
+    const allPublished = await db
       .select()
       .from(galleryItems)
       .where(eq(galleryItems.isPublished, true))
       .orderBy(asc(galleryItems.sortOrder));
-    if (category && category !== 'ALL') {
-      rows = rows.filter((g) => g.category === category);
+
+    if (allPublished.length === 0) {
+      return res.json(getFallbackGallery(category));
     }
+
+    const rows =
+      category && category !== 'ALL'
+        ? allPublished.filter((g) => g.category === category)
+        : allPublished;
     return res.json(rows);
   } catch (error) {
-    console.error('Gallery fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load gallery.' });
+    console.warn('Gallery DB fetch failed, serving fallback gallery:', error);
+    return res.json(getFallbackGallery(category));
   }
 });
 
 router.get('/team', async (_req, res) => {
   try {
     const rows = await db.select().from(staff).orderBy(asc(staff.sortOrder));
-    return res.json(rows);
+    return res.json(rows.length > 0 ? rows : FALLBACK_TEAM);
   } catch (error) {
-    console.error('Team fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load team members.' });
+    console.warn('Team DB fetch failed, serving fallback team:', error);
+    return res.json(FALLBACK_TEAM);
   }
 });
 
@@ -260,10 +297,10 @@ router.get('/social-posts', async (_req, res) => {
       .from(socialPosts)
       .where(eq(socialPosts.isPublished, true))
       .orderBy(desc(socialPosts.publishedAt));
-    return res.json(rows);
+    return res.json(rows.length > 0 ? rows : FALLBACK_SOCIAL_POSTS);
   } catch (error) {
-    console.error('Social posts fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load social posts.' });
+    console.warn('Social posts DB fetch failed, serving fallback posts:', error);
+    return res.json(FALLBACK_SOCIAL_POSTS);
   }
 });
 
@@ -274,10 +311,10 @@ router.get('/blog', async (_req, res) => {
       .from(blogPosts)
       .where(eq(blogPosts.isPublished, true))
       .orderBy(desc(blogPosts.publishedAt));
-    return res.json(rows);
+    return res.json(rows.length > 0 ? rows : FALLBACK_BLOG_POSTS);
   } catch (error) {
-    console.error('Blog fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load blog posts.' });
+    console.warn('Blog DB fetch failed, serving fallback articles:', error);
+    return res.json(FALLBACK_BLOG_POSTS);
   }
 });
 
@@ -288,11 +325,17 @@ router.get('/blog/:slug', async (req, res) => {
       .from(blogPosts)
       .where(and(eq(blogPosts.slug, req.params.slug), eq(blogPosts.isPublished, true)))
       .limit(1);
-    if (rows.length === 0) return res.status(404).json({ error: 'Article not found' });
+    if (rows.length === 0) {
+      const fallback = getFallbackBlogBySlug(req.params.slug);
+      if (fallback) return res.json(fallback);
+      return res.status(404).json({ error: 'Article not found' });
+    }
     return res.json(rows[0]);
   } catch (error) {
-    console.error('Blog detail fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load article.' });
+    console.warn('Blog detail DB fetch failed, checking fallback:', error);
+    const fallback = getFallbackBlogBySlug(req.params.slug);
+    if (fallback) return res.json(fallback);
+    return res.status(404).json({ error: 'Article not found' });
   }
 });
 
@@ -303,10 +346,10 @@ router.get('/offers', async (_req, res) => {
       .from(offers)
       .where(eq(offers.isPublished, true))
       .orderBy(desc(offers.createdAt));
-    return res.json(rows);
+    return res.json(rows.length > 0 ? rows : FALLBACK_OFFERS);
   } catch (error) {
-    console.error('Offers fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load offers.' });
+    console.warn('Offers DB fetch failed, serving fallback offers:', error);
+    return res.json(FALLBACK_OFFERS);
   }
 });
 
@@ -317,39 +360,39 @@ router.get('/reviews', async (_req, res) => {
       .from(reviews)
       .where(eq(reviews.isPublished, true))
       .orderBy(desc(reviews.createdAt));
-    return res.json(rows);
+    return res.json(rows.length > 0 ? rows : FALLBACK_REVIEWS);
   } catch (error) {
-    console.error('Reviews fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load reviews.' });
+    console.warn('Reviews DB fetch failed, serving fallback reviews:', error);
+    return res.json(FALLBACK_REVIEWS);
   }
 });
 
 router.get('/holidays', async (_req, res) => {
   try {
     const rows = await db.select().from(holidays).orderBy(asc(holidays.date));
-    return res.json(rows);
+    return res.json(rows.length > 0 ? rows : FALLBACK_HOLIDAYS);
   } catch (error) {
-    console.error('Holidays fetch failed:', error);
-    return res.status(500).json({ error: 'Failed to load holidays.' });
+    console.warn('Holidays DB fetch failed, serving fallback holidays:', error);
+    return res.json(FALLBACK_HOLIDAYS);
   }
 });
 
 router.get('/bookings/availability', async (req, res) => {
-  try {
-    const date = typeof req.query.date === 'string' ? req.query.date : '';
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return res.status(400).json({ error: 'Valid YYYY-MM-DD date query parameter is required.' });
-    }
-    const rawIds = typeof req.query.serviceIds === 'string' ? req.query.serviceIds : '';
-    const serviceIds = rawIds
-      .split(',')
-      .map((s) => Number(s.trim()))
-      .filter((n) => Number.isInteger(n) && n > 0);
-    const staffId = req.query.staffId ? Number(req.query.staffId) : null;
-    const excludeBookingId = req.query.excludeBookingId
-      ? Number(req.query.excludeBookingId)
-      : undefined;
+  const date = typeof req.query.date === 'string' ? req.query.date : '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return res.status(400).json({ error: 'Valid YYYY-MM-DD date query parameter is required.' });
+  }
+  const rawIds = typeof req.query.serviceIds === 'string' ? req.query.serviceIds : '';
+  const serviceIds = rawIds
+    .split(',')
+    .map((s) => Number(s.trim()))
+    .filter((n) => Number.isInteger(n) && n > 0);
+  const staffId = req.query.staffId ? Number(req.query.staffId) : null;
+  const excludeBookingId = req.query.excludeBookingId
+    ? Number(req.query.excludeBookingId)
+    : undefined;
 
+  try {
     const result = await computeAvailability({
       date,
       serviceIds,
@@ -357,10 +400,28 @@ router.get('/bookings/availability', async (req, res) => {
       excludeBookingId:
         excludeBookingId && Number.isInteger(excludeBookingId) ? excludeBookingId : undefined,
     });
+    if (
+      result.slots.length === 0 &&
+      !result.isHoliday &&
+      !result.isPastDate &&
+      !result.isClosedDay
+    ) {
+      const fallbackAvail = computeFallbackAvailability({
+        date,
+        serviceIds,
+        staffId: staffId && Number.isInteger(staffId) ? staffId : null,
+      });
+      return res.json({ ...fallbackAvail, timezone: 'Asia/Kathmandu' });
+    }
     return res.json(result);
   } catch (error) {
-    console.error('Availability endpoint error:', error);
-    return res.status(500).json({ error: 'Could not check live slot availability.' });
+    console.warn('Availability DB check failed, serving fallback availability:', error);
+    const fallbackAvail = computeFallbackAvailability({
+      date,
+      serviceIds,
+      staffId: staffId && Number.isInteger(staffId) ? staffId : null,
+    });
+    return res.json({ ...fallbackAvail, timezone: 'Asia/Kathmandu' });
   }
 });
 
