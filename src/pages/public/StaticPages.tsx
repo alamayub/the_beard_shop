@@ -10,7 +10,7 @@ import { EditorialReveal, LUXURY_EASE } from '../../components/ui/MotionPrimitiv
 const FAQ_ITEMS = [
   {
     q: 'Are the listed prices in Nepalese Rupees (NPR) final?',
-    a: 'Starting prices shown on this platform are clearly marked as editable demo rates in NPR. Final service totals may vary for extra-long hair density or custom add-ons and are always confirmed during your pre-service consultation.',
+    a: 'Starting prices are listed transparently in Nepalese Rupees (NPR). Final service totals may vary for extra-long hair density or custom add-ons and are always confirmed during your pre-service consultation.',
   },
   {
     q: 'Which payment methods do you support in Nepal?',

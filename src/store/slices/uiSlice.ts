@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Language } from '../../utils/nepal';
 
-export interface ToastItem {
+interface ToastItem {
   id: string;
   variant: 'success' | 'error' | 'info';
   title: string;
@@ -10,7 +10,6 @@ export interface ToastItem {
 
 interface UiState {
   language: Language;
-  showBikramSambat: boolean;
   preselectedServiceId: number | null;
   preselectedStaffId: number | null;
   toasts: ToastItem[];
@@ -18,7 +17,6 @@ interface UiState {
 
 const initialState: UiState = {
   language: 'en',
-  showBikramSambat: true,
   preselectedServiceId: null,
   preselectedStaffId: null,
   toasts: [],
@@ -30,9 +28,6 @@ const uiSlice = createSlice({
   reducers: {
     setLanguage(state, action: PayloadAction<Language>) {
       state.language = action.payload;
-    },
-    toggleBikramSambat(state) {
-      state.showBikramSambat = !state.showBikramSambat;
     },
     setBookingPreselection(
       state,
@@ -60,7 +55,6 @@ const uiSlice = createSlice({
 
 export const {
   setLanguage,
-  toggleBikramSambat,
   setBookingPreselection,
   clearBookingPreselection,
   pushToast,

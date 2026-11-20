@@ -89,7 +89,6 @@ export function AdminTeamPage() {
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState(SALON_IMAGE_PRESETS[8].url);
   const [isAvailable, setIsAvailable] = useState(true);
-  const [isDemoProfile, setIsDemoProfile] = useState(false);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -119,7 +118,6 @@ export function AdminTeamPage() {
     setBio('');
     setAvatarUrl(SALON_IMAGE_PRESETS[8].url);
     setIsAvailable(true);
-    setIsDemoProfile(false);
     setModalOpen(true);
   };
 
@@ -132,7 +130,6 @@ export function AdminTeamPage() {
     setBio(member.bio || '');
     setAvatarUrl(member.avatarUrl || SALON_IMAGE_PRESETS[8].url);
     setIsAvailable(member.isAvailable);
-    setIsDemoProfile(Boolean(member.isDemoProfile));
     setModalOpen(true);
   };
 
@@ -155,7 +152,7 @@ export function AdminTeamPage() {
             bio,
             avatarUrl,
             isAvailable,
-            isDemoProfile,
+            isDemoProfile: false,
           },
         }).unwrap();
         notifySuccess('Specialist updated', `${fullName} saved successfully.`);
@@ -168,7 +165,7 @@ export function AdminTeamPage() {
           bio,
           avatarUrl,
           isAvailable,
-          isDemoProfile,
+          isDemoProfile: false,
         }).unwrap();
         notifySuccess('Specialist added', `${fullName} joined the team roster.`);
       }
@@ -405,15 +402,6 @@ export function AdminTeamPage() {
                 className="accent-[#6B1222]"
               />
               Accepting online appointments
-            </label>
-            <label className="inline-flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isDemoProfile}
-                onChange={(e) => setIsDemoProfile(e.target.checked)}
-                className="accent-[#6B1222]"
-              />
-              Mark as sample/demo profile
             </label>
           </div>
 

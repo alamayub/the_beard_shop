@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Check, Clock } from 'lucide-react';
 import { useGetServiceBySlugQuery } from '../../api/salonApi';
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppStore';
 import { setBookingPreselection } from '../../store/slices/uiSlice';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta';
+import { resolveAbsoluteImageUrl, useDocumentMeta } from '../../hooks/useDocumentMeta';
 import { formatNpr } from '../../utils/nepal';
 import { Button, SafeImage, Skeleton } from '../../components/ui/Primitives';
 import { LUXURY_EASE } from '../../components/ui/MotionPrimitives';
@@ -17,9 +17,60 @@ export function ServiceDetailPage() {
 
   const { data: service, isLoading, isError } = useGetServiceBySlugQuery(slug);
 
+  const serviceUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}${window.location.pathname}`
+      : `/services/${slug}`;
+
   useDocumentMeta(
     service?.name || 'Service Details',
-    service?.description || 'Detailed treatment information and NPR pricing at The Beard Shop.'
+    service
+      ? `${service.description} Starting at ${formatNpr(service.priceNpr, 'en')} (${service.durationMinutes} min) at The Beard Shop, Birgunj, Nepal.`
+      : 'Detailed treatment information and NPR pricing at The Beard Shop.',
+    service
+      ? {
+          ogTitle: `${service.name} (${formatNpr(service.priceNpr, 'en')}) — The Beard Shop`,
+          ogType: 'product',
+          image: service.imageUrl,
+          imageAlt: `${service.name} at The Beard Shop, Birgunj`,
+          twitterCard: 'summary_large_image',
+          twitterLabels: [
+            { label: 'Starting Price', data: `${formatNpr(service.priceNpr, 'en')} (NPR)` },
+            { label: 'Duration', data: `${service.durationMinutes} minutes` },
+          ],
+          product: {
+            priceAmount: service.priceNpr,
+            priceCurrency: 'NPR',
+            category: service.categoryName || 'Salon Treatment',
+          },
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            name: service.name,
+            description: service.description,
+            serviceType: service.categoryName || 'Beauty & Grooming Service',
+            url: serviceUrl,
+            image: resolveAbsoluteImageUrl(service.imageUrl),
+            provider: {
+              '@type': 'BeautySalon',
+              name: 'The Beard Shop Beauty Salon',
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Birgunj',
+                addressRegion: 'Madhesh Province',
+                addressCountry: 'NP',
+              },
+            },
+            offers: {
+              '@type': 'Offer',
+              price: service.priceNpr,
+              priceCurrency: 'NPR',
+              availability: 'https://schema.org/InStock',
+              url: serviceUrl,
+            },
+          },
+        }
+      : undefined
   );
 
   if (isLoading) {
@@ -106,7 +157,7 @@ export function ServiceDetailPage() {
           <div className="flex items-center gap-2 text-xs text-[#8B1A2D]">
             <span>{service.categoryName}</span>
             <span aria-hidden="true">·</span>
-            <span>{service.isDemoPrice ? 'Editable Demo Pricing' : 'Official Rate'}</span>
+            <span>Official Rate</span>
           </div>
 
           <h1 className="mt-3 font-serif text-3xl sm:text-4xl font-medium leading-[1.1] text-[#2A0810]">

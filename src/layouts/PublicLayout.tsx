@@ -464,7 +464,7 @@ export function PublicLayout() {
           <div className="mt-14 flex flex-col gap-3 border-t border-white/12 pt-8 text-xs text-[#B5979C] sm:flex-row sm:items-center sm:justify-between">
             <p>
               © {new Date().getFullYear()} {settings?.businessName || 'The Beard Shop Beauty Salon'}.
-              Sample prices, staff profiles, and contact placeholders are editable demo content.
+              All rights reserved.
             </p>
             <p className="tabular-nums shrink-0">Asia/Kathmandu (NPT) · NPR</p>
           </div>

@@ -1081,7 +1081,6 @@ export function AdminReviewsPage() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [isPublished, setIsPublished] = useState(true);
-  const [isDemoReview, setIsDemoReview] = useState(false);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -1109,7 +1108,6 @@ export function AdminReviewsPage() {
     setRating(5);
     setComment('');
     setIsPublished(true);
-    setIsDemoReview(false);
     setModalOpen(true);
   };
 
@@ -1120,7 +1118,6 @@ export function AdminReviewsPage() {
     setRating(rev.rating);
     setComment(rev.comment);
     setIsPublished(rev.isPublished);
-    setIsDemoReview(Boolean(rev.isDemoReview));
     setModalOpen(true);
   };
 
@@ -1133,7 +1130,7 @@ export function AdminReviewsPage() {
         rating: Number(rating),
         comment,
         isPublished,
-        isDemoReview,
+        isDemoReview: false,
       };
       if (editing) {
         await updateReview({ id: editing.id, data: payload }).unwrap();
@@ -1351,15 +1348,6 @@ export function AdminReviewsPage() {
                 className="accent-[#6B1222]"
               />
               Publish on website
-            </label>
-            <label className="inline-flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isDemoReview}
-                onChange={(e) => setIsDemoReview(e.target.checked)}
-                className="accent-[#6B1222]"
-              />
-              Mark as sample/demo review
             </label>
           </div>
           <div className="flex justify-end gap-2 border-t border-[#E6DADC] pt-4">

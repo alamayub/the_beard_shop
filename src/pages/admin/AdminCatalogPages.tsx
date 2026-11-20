@@ -67,7 +67,6 @@ export function AdminServicesPage() {
   const [imageUrl, setImageUrl] = useState(SALON_IMAGE_PRESETS[1].url);
   const [isFeatured, setIsFeatured] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
-  const [isDemoPrice, setIsDemoPrice] = useState(false);
 
   const categoryNameMap = useMemo(() => {
     const map: Record<number, string> = {};
@@ -101,7 +100,6 @@ export function AdminServicesPage() {
     setImageUrl(SALON_IMAGE_PRESETS[1].url);
     setIsFeatured(false);
     setIsPublished(true);
-    setIsDemoPrice(false);
     setModalOpen(true);
   };
 
@@ -116,7 +114,6 @@ export function AdminServicesPage() {
     setImageUrl(svc.imageUrl);
     setIsFeatured(svc.isFeatured);
     setIsPublished(svc.isPublished);
-    setIsDemoPrice(svc.isDemoPrice);
     setModalOpen(true);
   };
 
@@ -136,7 +133,7 @@ export function AdminServicesPage() {
             imageUrl,
             isFeatured,
             isPublished,
-            isDemoPrice,
+            isDemoPrice: false,
           },
         }).unwrap();
         notifySuccess('Service updated', `${name} has been saved.`);
@@ -153,7 +150,7 @@ export function AdminServicesPage() {
           imageUrl,
           isFeatured,
           isPublished,
-          isDemoPrice,
+          isDemoPrice: false,
         }).unwrap();
         notifySuccess('Service created', `${name} added to catalog.`);
       }
@@ -290,9 +287,7 @@ export function AdminServicesPage() {
                                 <Star className="h-3 w-3 shrink-0 fill-[#9E1F32] text-[#9E1F32]" />
                               )}
                             </p>
-                            <p className="text-[11px] text-[#777777]">
-                              {svc.isDemoPrice ? 'Editable Demo Rate' : 'Verified Salon Rate'}
-                            </p>
+                            <p className="text-[11px] text-[#777777]">Official Salon Rate</p>
                           </div>
                         </div>
                       </td>
@@ -441,18 +436,9 @@ export function AdminServicesPage() {
                 type="checkbox"
                 checked={isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
-                className="accent-[#111111]"
+                className="accent-[#6B1222]"
               />
               Feature on homepage
-            </label>
-            <label className="inline-flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isDemoPrice}
-                onChange={(e) => setIsDemoPrice(e.target.checked)}
-                className="accent-[#111111]"
-              />
-              Mark as editable demo rate
             </label>
           </div>
 

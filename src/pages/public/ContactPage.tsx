@@ -50,7 +50,7 @@ export function ContactPage() {
       <PageIntro
         kicker="Concierge · Birgunj, Nepal"
         title="Visit or Write To Us"
-        subtitle="Reach our studio desk for celebration glam consultations, group appointments, or personalized grooming guidance. Contact details below use editable demo placeholders configurable in Admin Settings."
+        subtitle="Reach our studio desk for celebration glam consultations, group appointments, or personalized grooming guidance in Birgunj."
         rightSlot={
           <div className="flex flex-wrap gap-3">
             <a

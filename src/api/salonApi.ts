@@ -26,7 +26,6 @@ import type {
   PaymentMethod,
   SalonHoliday,
   SalonOffer,
-  SalonReview,
   SalonService,
   SalonSettings,
   ServiceCategory,
@@ -34,7 +33,7 @@ import type {
   StaffMember,
 } from '../types/salon';
 
-export const publicSalonApi = baseApi.injectEndpoints({
+const publicSalonApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBootstrap: builder.query<BootstrapResponse, void>({
       async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
@@ -167,14 +166,6 @@ export const publicSalonApi = baseApi.injectEndpoints({
         return { data: rows.length > 0 ? rows : FALLBACK_OFFERS };
       },
       providesTags: ['Offers'],
-    }),
-    getReviews: builder.query<SalonReview[], void>({
-      async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ('/reviews');
-        const rows = !res.error && Array.isArray(res.data) ? (res.data as SalonReview[]) : [];
-        return { data: rows.length > 0 ? rows : FALLBACK_REVIEWS };
-      },
-      providesTags: ['Reviews'],
     }),
     getHolidays: builder.query<SalonHoliday[], void>({
       async queryFn(_arg, _api, _extraOptions, fetchWithBQ) {
@@ -313,7 +304,6 @@ export const {
   useGetBlogPostsQuery,
   useGetBlogBySlugQuery,
   useGetOffersQuery,
-  useGetReviewsQuery,
   useGetHolidaysQuery,
   useGetAvailabilityQuery,
   useCreateBookingMutation,

@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useGetBlogBySlugQuery } from '../../api/salonApi';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta';
+import { resolveAbsoluteImageUrl, useDocumentMeta } from '../../hooks/useDocumentMeta';
 import { Button, SafeImage, Skeleton } from '../../components/ui/Primitives';
 import { LUXURY_EASE } from '../../components/ui/MotionPrimitives';
 
@@ -10,7 +10,55 @@ export function BlogDetailPage() {
   const { slug = '' } = useParams();
   const { data: post, isLoading, isError } = useGetBlogBySlugQuery(slug);
 
-  useDocumentMeta(post?.title || 'Journal Article', post?.excerpt);
+  const articleUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}${window.location.pathname}`
+      : `/blog/${slug}`;
+
+  useDocumentMeta(
+    post?.title || 'Journal Article',
+    post?.excerpt ||
+      (post ? `Read "${post.title}" by ${post.authorName} on The Beard Shop Beauty Journal.` : undefined),
+    post
+      ? {
+          ogTitle: `${post.title} — The Beard Shop Journal`,
+          ogType: 'article',
+          image: post.coverImageUrl,
+          imageAlt: post.title,
+          twitterCard: 'summary_large_image',
+          twitterLabels: [
+            { label: 'Written by', data: post.authorName },
+            { label: 'Reading time', data: `${post.readTimeMinutes} min read` },
+          ],
+          article: {
+            publishedTime: post.publishedAt,
+            author: post.authorName,
+            section: post.category,
+          },
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.title,
+            description: post.excerpt,
+            image: resolveAbsoluteImageUrl(post.coverImageUrl),
+            datePublished: post.publishedAt,
+            articleSection: post.category,
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': articleUrl,
+            },
+            author: {
+              '@type': 'Person',
+              name: post.authorName,
+            },
+            publisher: {
+              '@type': 'BeautySalon',
+              name: 'The Beard Shop Beauty Salon',
+            },
+          },
+        }
+      : undefined
+  );
 
   if (isLoading) {
     return (

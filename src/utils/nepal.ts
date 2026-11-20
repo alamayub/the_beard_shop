@@ -30,7 +30,7 @@ const BS_MONTHS_NE = [
   'चैत',
 ];
 
-export function toNepaliDigits(input: string | number): string {
+function toNepaliDigits(input: string | number): string {
   return String(input).replace(/\d/g, (d) => NEPALI_DIGITS[Number(d)] ?? d);
 }
 

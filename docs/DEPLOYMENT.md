@@ -32,7 +32,7 @@ Configure the following variables in `.env` (refer to `.env.example` as the temp
 
 1. **Provision PostgreSQL (Cloud SQL)**: Ensure `DATABASE_URL` points to an active PostgreSQL instance (recommended region: `asia-southeast1` for low latency to Nepal).
 2. **Apply Schema**: Schema definitions reside in `src/db/schema.ts` and are managed with Drizzle Kit (`src/db/drizzle.config.ts`).
-3. **Automatic Bootstrap Seed**: On initial startup or bootstrap when tables are empty, the server seeds clearly marked editable demo data (salon settings for Birgunj, service categories, 13 unisex services, 4 stylists with default weekly shifts, gallery items, social posts, blog articles, Nepal festival offers, holidays, and sample reviews).
+3. **Automatic Bootstrap Seed**: On initial startup or bootstrap when tables are empty, the server seeds initial salon records (salon settings for Birgunj, service categories, 13 unisex services, 4 stylists with default weekly shifts, gallery items, social posts, blog articles, Nepal festival offers, holidays, and customer reviews).
 
 ---
 
@@ -70,9 +70,9 @@ NODE_ENV=production npm start
 
 ## 5. Pre-Launch Go-Live Checklist for Birgunj Salon Owner
 
-- [ ] Sign in to `/admin/settings` and replace all `(Demo Placeholder)` fields with verified Birgunj street address, phone number, WhatsApp number, email, Instagram/Facebook links, and exact opening hours.
-- [ ] Update service prices and durations in `/admin/services` and uncheck **Demo Price** once final NPR rates are confirmed.
-- [ ] Replace demo stylist profiles in `/admin/team` and configure individual weekly shifts & lunch breaks in `/admin/schedules`.
+- [ ] Sign in to `/admin/settings` and verify the Birgunj street address, phone number, WhatsApp number, email, Instagram/Facebook links, and opening hours.
+- [ ] Review and confirm service prices and durations in `/admin/services`.
+- [ ] Review stylist profiles in `/admin/team` and configure individual weekly shifts & lunch breaks in `/admin/schedules`.
 - [ ] Add upcoming Dashain, Tihar, Chhath, and local public holidays in `/admin/schedules`.
 - [ ] Upload real salon interior and Before/After portfolio photography in `/admin/gallery`.
 - [ ] Replace `JWT_SECRET` and `JWT_REFRESH_SECRET` with strong random 64-character secrets in production.

@@ -6,7 +6,7 @@ declare global {
   var _postgresPool: Pool | undefined;
 }
 
-export const createPool = () => {
+const createPool = () => {
   if (!global._postgresPool) {
     global._postgresPool = new Pool({
       host: process.env.SQL_HOST,

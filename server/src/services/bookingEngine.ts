@@ -14,7 +14,7 @@ import {
   staffSchedules,
 } from '../../../src/db/schema.ts';
 
-export const NEPAL_TIMEZONE = 'Asia/Kathmandu';
+const NEPAL_TIMEZONE = 'Asia/Kathmandu';
 const LEAD_TIME_MINUTES = 15;
 
 export function getKathmanduDateIso(date: Date = new Date()): string {
@@ -32,7 +32,7 @@ export function getKathmanduDateIsoOffset(daysOffset: number): string {
   return getKathmanduDateIso(target);
 }
 
-export function getKathmanduCurrentMinutes(date: Date = new Date()): number {
+function getKathmanduCurrentMinutes(date: Date = new Date()): number {
   const parts = new Intl.DateTimeFormat('en-GB', {
     timeZone: NEPAL_TIMEZONE,
     hour: '2-digit',
@@ -53,18 +53,18 @@ export function getKathmanduYear(date: Date = new Date()): number {
   );
 }
 
-export function timeToMinutes(t: string): number {
+function timeToMinutes(t: string): number {
   const [h, m] = t.split(':').map(Number);
   return (h || 0) * 60 + (m || 0);
 }
 
-export function minutesToTime(total: number): string {
+function minutesToTime(total: number): string {
   const h = Math.floor(total / 60);
   const m = total % 60;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-export function overlaps(startA: number, endA: number, startB: number, endB: number): boolean {
+function overlaps(startA: number, endA: number, startB: number, endB: number): boolean {
   return startA < endB && startB < endA;
 }
 
@@ -77,7 +77,7 @@ export class BookingConflictError extends Error {
   }
 }
 
-export interface SlotAvailabilityResult {
+interface SlotAvailabilityResult {
   date: string;
   timezone: string;
   isPastDate?: boolean;

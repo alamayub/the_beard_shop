@@ -43,7 +43,7 @@ export function ServicesPage() {
       <PageIntro
         kicker="Service Menu · NPR"
         title="Tailored Grooming & Beauty Rituals"
-        subtitle="All prices displayed below are editable demo sample rates in Nepalese Rupees (NPR) and can be updated anytime from the Admin Dashboard."
+        subtitle="Explore our curated unisex menu of precision haircuts, beard rituals, dimensional hair color, skincare, and party makeup in Nepalese Rupees (NPR)."
         rightSlot={
           <div className="relative w-full sm:w-80">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#777777]" />
@@ -94,7 +94,7 @@ export function ServicesPage() {
             <span className="tabular-nums">
               Showing {services.length} {services.length === 1 ? 'treatment' : 'treatments'}
             </span>
-            <span>Currency: NPR · Editable Demo Rates</span>
+            <span>Currency: NPR · Nepal Time (NPT)</span>
           </div>
         )}
 
@@ -160,9 +160,7 @@ export function ServicesPage() {
                   </div>
                   <div className="flex items-center justify-between border-t border-[#E6DADC] bg-[#FAF8F4]/70 px-6 py-4 sm:px-7">
                     <div>
-                      <p className="text-[11px] text-[#777777]">
-                        {service.isDemoPrice ? 'Starting (Demo Rate)' : 'Starting Rate'}
-                      </p>
+                      <p className="text-[11px] text-[#777777]">Starting Rate</p>
                       <p className="font-mono text-base font-medium text-[#2A0810] tabular-nums">
                         {formatNpr(service.priceNpr, lang)}
                       </p>

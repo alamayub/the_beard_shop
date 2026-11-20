@@ -261,7 +261,7 @@ export function HomePage() {
             <SectionHeader
               kicker="01 · Curated Menu"
               title={t.sections.featuredServices}
-              subtitle="Precision barbering, dimensional hair color, party glam, and skincare. All listed NPR rates are editable demo sample prices."
+              subtitle="Precision barbering, dimensional hair color, party glam, and skincare rituals crafted in Birgunj."
             />
             <Link
               to="/services"
@@ -303,7 +303,7 @@ export function HomePage() {
                     <div className="mt-5 flex items-center gap-2 text-xs text-[#777777]">
                       <span className="tabular-nums">{service.durationMinutes} min</span>
                       <span aria-hidden="true">·</span>
-                      <span>{service.isDemoPrice ? 'Demo Sample Rate' : 'Standard Rate'}</span>
+                      <span>Standard Rate</span>
                     </div>
 
                     <Link to={`/services/${service.slug}`} className="block">
@@ -454,7 +454,7 @@ export function HomePage() {
                       >
                         <span className="tabular-nums">{pkg.durationMinutes} min session</span>
                         <span className="text-[#F0B6BF]">
-                          {isSignatureCenter ? 'Signature Restoration' : 'Demo Package Rate'}
+                          {isSignatureCenter ? 'Signature Restoration' : 'Curated Suite'}
                         </span>
                       </div>
                       <h3
@@ -552,7 +552,7 @@ export function HomePage() {
             <SectionHeader
               kicker="05 · Our Artisans"
               title={t.sections.experts}
-              subtitle="Experienced barbers, colorists, makeup artists, and skincare specialists. Demo profiles are fully editable in Admin."
+              subtitle="Experienced barbers, colorists, makeup artists, and skincare specialists dedicated to unhurried craft."
             />
             <Link
               to="/team"
@@ -689,7 +689,7 @@ export function HomePage() {
           <SectionHeader
             kicker="07 · Client Reflections"
             title={t.sections.testimonials}
-            subtitle="Sample client impressions demonstrating the editorial testimonial layout (editable and moderatable via Admin)."
+            subtitle="Reflections from guests who visit our Birgunj atelier for precision grooming, color, and skincare."
             align="center"
           />
         </EditorialReveal>

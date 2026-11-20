@@ -26,7 +26,7 @@ export function TeamPage() {
       <PageIntro
         kicker="Our Artisans · Birgunj"
         title="Specialists Dedicated to Your Craft"
-        subtitle="Each profile below represents an editable demo specialist record managed from the Admin Team & Schedule portal."
+        subtitle="Meet our master barbers, colorists, makeup artists, and estheticians welcoming guests in Birgunj, Nepal."
       />
 
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">

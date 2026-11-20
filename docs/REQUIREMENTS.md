@@ -6,7 +6,7 @@
 - **Category**: Luxury Unisex Hair, Beard Grooming, Skin, Party Makeup & Beauty Salon
 - **Target Location**: Birgunj, Parsa, Madhesh Province, Nepal (`27.014045, 84.8482375`)
 - **Primary Channels**: Public Website, Real-Time Online Booking Engine, Customer Booking Portal, WhatsApp Integration, Instagram/Facebook Feed Showcase, and Role-Based Admin Management Dashboard.
-- **Data Integrity Policy**: Never fabricate verified contact numbers, addresses, staff bios, or reviews as real. All initial seed content must be clearly labeled as editable demo content manageable from the Admin Dashboard.
+- **Content Management Policy**: All salon contact numbers, addresses, staff profiles, service rates, and customer reviews are centrally stored in PostgreSQL and editable from the Admin Dashboard.
 
 ---
 
@@ -60,7 +60,7 @@ Every sidebar route under `/admin/*` must be fully functional, backed by RTK Que
 9. **Social Media Feed (`/admin/social`)**: Instagram/Facebook image & reel manager with publish/hide toggle.
 10. **Blog & Tips (`/admin/blog`)**: Article CRUD with category, read time, cover image, author, and publish toggle.
 11. **Offers & Promos (`/admin/offers`)**: Festival campaign CRUD (`DASHAIN`, `TIHAR`, `TEEJ`, `CHHATH`, `NEPALI_NEW_YEAR`, `SEASONAL`), promo codes, date windows.
-12. **Customer Reviews (`/admin/reviews`)**: Moderation queue, star ratings, demo review tagging, publish/unpublish controls.
+12. **Customer Reviews (`/admin/reviews`)**: Moderation queue, star ratings, and publish/unpublish controls.
 13. **Payments & Settlements (`/admin/payments`)**: Payment ledger for Cash, eSewa, Khalti, Fonepay with Recharts provider breakdown, manual recording, and verification status updates.
 14. **Notifications & Inquiries (`/admin/notifications`)**: Two-tab inbox for real-time system alerts (mark read / mark all read / broadcast) and website contact messages (status workflow & WhatsApp reply).
 15. **Reports & Analytics (`/admin/reports`)**: Configurable date-range (`7d`, `30d`, `90d`) revenue & booking charts, top services, stylist performance, and one-click CSV export.

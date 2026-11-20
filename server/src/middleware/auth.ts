@@ -7,7 +7,7 @@ import { auditLogs, users } from '../../../src/db/schema.ts';
 
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'MANAGER' | 'RECEPTIONIST' | 'CUSTOMER';
 
-export interface AuthenticatedUser {
+interface AuthenticatedUser {
   id: number;
   uid: string;
   email: string;

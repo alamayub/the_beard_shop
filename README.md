@@ -112,6 +112,6 @@ npm start        # Run production Express server serving dist/ + /api/*
 
 ---
 
-## Editable Demo Data Notice
+## Editable Salon Content Management
 
-All default business contact details, NPR prices, staff profiles, and customer testimonials are seeded as **clearly marked editable demo data**. Salon administrators can update every business field, opening hour, service price, team profile, and promotion directly from `/admin/settings` and the corresponding dashboard modules without modifying code.
+All salon contact details, NPR service pricing, stylist profiles, opening hours, and customer testimonials can be updated directly from `/admin/settings` and the corresponding dashboard modules without modifying code.

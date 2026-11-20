@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -10,6 +11,7 @@ import { createServer as createViteServer } from 'vite';
 import authRoutes from './server/src/routes/authRoutes.ts';
 import publicRoutes from './server/src/routes/publicRoutes.ts';
 import adminRoutes from './server/src/routes/adminRoutes.ts';
+import { renderDetailMetaHtml } from './server/src/services/seoMeta.ts';
 
 dotenv.config();
 
@@ -79,10 +81,41 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: 'spa',
     });
+
+    app.get(['/services/:slug', '/blog/:slug'], async (req, res, next) => {
+      try {
+        const template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+        const injected = await renderDetailMetaHtml(template, req);
+        if (!injected) return next();
+        const html = await vite.transformIndexHtml(req.originalUrl, injected);
+        res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).end(html);
+      } catch (err) {
+        console.warn('Dev SEO meta injection fallback:', err);
+        next();
+      }
+    });
+
     app.use(vite.middlewares);
   } else {
     const distDir = path.resolve(__dirname, 'dist');
+    const prodTemplate = fs.existsSync(path.join(distDir, 'index.html'))
+      ? fs.readFileSync(path.join(distDir, 'index.html'), 'utf-8')
+      : '';
+
     app.use(express.static(distDir));
+
+    app.get(['/services/:slug', '/blog/:slug'], async (req, res) => {
+      try {
+        const injected = prodTemplate ? await renderDetailMetaHtml(prodTemplate, req) : null;
+        if (injected) {
+          return res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).end(injected);
+        }
+      } catch (err) {
+        console.warn('Prod SEO meta injection fallback:', err);
+      }
+      return res.sendFile(path.join(distDir, 'index.html'));
+    });
+
     app.get('*', (_req, res) => {
       res.sendFile(path.join(distDir, 'index.html'));
     });

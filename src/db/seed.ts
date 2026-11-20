@@ -1,4 +1,4 @@
-import { and, count, eq } from 'drizzle-orm';
+import { count } from 'drizzle-orm';
 import { db } from './index.ts';
 import {
   blogPosts,
@@ -51,15 +51,15 @@ async function runSeed() {
       businessName: 'The Beard Shop Beauty Salon',
       tagline: 'Your Style. Your Identity.',
       taglineNe: 'तपाईंको शैली, तपाईंको पहिचान।',
-      address: 'Birgunj, Parsa, Madhesh Province, Nepal (Editable Demo Address)',
+      address: 'Birgunj, Parsa, Madhesh Province, Nepal',
       city: 'Birgunj',
       province: 'Madhesh Province',
       country: 'Nepal',
       latitude: 27.014045,
       longitude: 84.8482375,
-      phone: '+977 980-0000000 (Demo Placeholder)',
+      phone: '+977 980-0000000',
       whatsappNumber: '9779800000000',
-      email: 'concierge@thebeardshop-demo.np',
+      email: 'concierge@thebeardshop.com.np',
       instagramUrl: 'https://www.instagram.com/the_beard_shop1/',
       facebookUrl: 'https://www.facebook.com/',
       googleMapsUrl:
@@ -74,7 +74,6 @@ async function runSeed() {
 
   const existingCategories = await db.select({ value: count() }).from(serviceCategories);
   if ((existingCategories[0]?.value ?? 0) > 0) {
-    await enrichDemoPhotography();
     return;
   }
 
@@ -175,14 +174,14 @@ async function runSeed() {
         nameNe: 'सिग्नेचर दाह्री स्कल्प्ट र हट टावल रिटुअल',
         slug: 'signature-beard-sculpt-hot-towel',
         description:
-          'Precision razor line-up, scissor graduation, eucalyptus steam towel compress, and cold-pressed argan balm finish. (Editable demo sample service)',
+          'Precision razor line-up, scissor graduation, eucalyptus steam towel compress, and cold-pressed argan balm finish.',
         descriptionNe:
           'सटीक रेजर लाइन-अप, कैंची फिनिसिङ, तातो तौलिया स्टिम र प्राकृतिक तेल मसाज।',
         priceNpr: 650,
         durationMinutes: 40,
         imageUrl: IMG_BEARD,
         isFeatured: true,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 1,
       },
       {
@@ -191,12 +190,12 @@ async function runSeed() {
         nameNe: 'एक्जिक्युटिभ टेपर कट र स्क्याल्प वाश',
         slug: 'executive-taper-cut-scalp-wash',
         description:
-          'Tailored consultation, bespoke fade or classic scissor cut, invigorating mint cleanse, and matte finish styling. (Editable demo sample)',
+          'Tailored consultation, bespoke fade or classic scissor cut, invigorating mint cleanse, and matte finish styling.',
         priceNpr: 800,
         durationMinutes: 45,
         imageUrl: IMG_EXEC_CUT,
         isFeatured: true,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 2,
       },
       {
@@ -210,7 +209,7 @@ async function runSeed() {
         durationMinutes: 60,
         imageUrl: IMG_HAIR,
         isFeatured: true,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 3,
       },
       {
@@ -224,7 +223,7 @@ async function runSeed() {
         durationMinutes: 150,
         imageUrl: IMG_BALAYAGE,
         isFeatured: true,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 4,
       },
       {
@@ -238,7 +237,7 @@ async function runSeed() {
         durationMinutes: 75,
         imageUrl: IMG_SPA,
         isFeatured: true,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 6,
       },
       {
@@ -252,7 +251,7 @@ async function runSeed() {
         durationMinutes: 60,
         imageUrl: IMG_SPA,
         isFeatured: false,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 7,
       },
       {
@@ -266,7 +265,7 @@ async function runSeed() {
         durationMinutes: 150,
         imageUrl: IMG_HAIR,
         isFeatured: false,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 8,
       },
       {
@@ -280,7 +279,7 @@ async function runSeed() {
         durationMinutes: 150,
         imageUrl: IMG_HAIR,
         isFeatured: false,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 9,
       },
       {
@@ -294,7 +293,7 @@ async function runSeed() {
         durationMinutes: 90,
         imageUrl: IMG_GLAM,
         isFeatured: true,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 10,
       },
       {
@@ -308,7 +307,7 @@ async function runSeed() {
         durationMinutes: 60,
         imageUrl: IMG_SPA,
         isFeatured: false,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 11,
       },
       {
@@ -322,7 +321,7 @@ async function runSeed() {
         durationMinutes: 75,
         imageUrl: IMG_MANI_PEDI,
         isFeatured: false,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 12,
       },
       {
@@ -336,7 +335,7 @@ async function runSeed() {
         durationMinutes: 150,
         imageUrl: IMG_EXEC_CUT,
         isFeatured: false,
-        isDemoPrice: true,
+        isDemoPrice: false,
         sortOrder: 13,
       },
     ])
@@ -346,47 +345,47 @@ async function runSeed() {
     .insert(staff)
     .values([
       {
-        fullName: 'Aarav Shrestha (Demo Profile)',
+        fullName: 'Aarav Shrestha',
         roleTitle: 'Creative Director & Master Barber',
-        bio: 'Specializing in precision scissor tailoring, architectural fades, and hot-towel beard rituals. Sample editable staff profile for demonstration.',
+        bio: 'Specializing in precision scissor tailoring, architectural fades, and hot-towel beard rituals.',
         experienceYears: 9,
         specializations: ['Beard Sculpting', 'Executive Haircuts', 'Groom Packages'],
         avatarUrl: IMG_STYLIST,
         isAvailable: true,
-        isDemoProfile: true,
+        isDemoProfile: false,
         sortOrder: 1,
       },
       {
-        fullName: 'Prakriti Jha (Demo Profile)',
+        fullName: 'Prakriti Jha',
         roleTitle: 'Senior Makeup & Styling Artist',
         bio: 'Trained in luminous South Asian celebration artistry, waterproof reception glam, and editorial hair styling for Terai & Nepali events.',
         experienceYears: 7,
         specializations: ['Party Glam', 'Editorial Makeup', 'Hair Styling'],
         avatarUrl: IMG_PORTRAIT_ARTIST,
         isAvailable: true,
-        isDemoProfile: true,
+        isDemoProfile: false,
         sortOrder: 2,
       },
       {
-        fullName: 'Suhana Karki (Demo Profile)',
+        fullName: 'Suhana Karki',
         roleTitle: 'Lead Colorist & Hair Texture Specialist',
         bio: 'Focused on dimensional balayage, healthy keratin smoothing, and customized botanical hair spa prescriptions.',
         experienceYears: 6,
         specializations: ['Balayage & Color', 'Keratin', 'Hair Smoothing'],
         avatarUrl: IMG_PORTRAIT_COLOR,
         isAvailable: true,
-        isDemoProfile: true,
+        isDemoProfile: false,
         sortOrder: 3,
       },
       {
-        fullName: 'Rohan Sah (Demo Profile)',
+        fullName: 'Rohan Sah',
         roleTitle: 'Skincare & Wellness Esthetician',
         bio: 'Dedicated to barrier-first clinical facials, scalp detox rituals, and calming spa manicure-pedicure experiences.',
         experienceYears: 5,
         specializations: ['Clinical Facials', 'Hair Spa', 'Manicure & Pedicure'],
         avatarUrl: IMG_MANI_PEDI,
         isAvailable: true,
-        isDemoProfile: true,
+        isDemoProfile: false,
         sortOrder: 4,
       },
     ])
@@ -530,7 +529,7 @@ async function runSeed() {
         'Living in the Terai plains means your skin and facial hair navigate warm temperatures and seasonal humidity. Rather than heavy waxes that trap heat, opt for a mild botanical beard wash three times a week, followed by two drops of cold-pressed argan or jojoba oil pressed into damp hair.\n\nSchedule a professional razor line-up and scissor graduation every 14 days to keep cheek and neckline geometry crisp without irritating sensitive skin. Always finish with a cool towel compress after shaving to calm pores.',
       category: 'Beard & Grooming',
       coverImageUrl: IMG_BEARD,
-      authorName: 'Aarav Shrestha (Demo Author)',
+      authorName: 'Aarav Shrestha',
       readTimeMinutes: 4,
       isFeatured: true,
     },
@@ -543,7 +542,7 @@ async function runSeed() {
         'Radiant celebration makeup always begins with calm, hydrated skin. Three months ahead of your milestone event, book a skin barrier consultation and begin monthly brightening facials. Six weeks out is the ideal window for dimensional hair color or keratin smoothing so the cuticle settles into natural shine.\n\nTwo weeks before the celebration, finalize your makeup and hair styling preview in natural daylight. Avoid trying unfamiliar active acids within ten days of the event.',
       category: 'Skincare & Hair Prep',
       coverImageUrl: IMG_GLAM,
-      authorName: 'Prakriti Jha (Demo Author)',
+      authorName: 'Prakriti Jha',
       readTimeMinutes: 5,
       isFeatured: true,
     },
@@ -556,7 +555,7 @@ async function runSeed() {
         'Clients often ask whether keratin or smoothing is better for monsoon humidity. Keratin treatments replenish lost structural proteins and seal the outer cuticle, reducing frizz by up to 80% while retaining soft natural movement.\n\nHair smoothing gently restructures stubborn waves into a sleeker silhouette. During your consultation, our stylists inspect elasticity and color history before prescribing the safest formula.',
       category: 'Hair Care',
       coverImageUrl: IMG_HAIR,
-      authorName: 'Suhana Karki (Demo Author)',
+      authorName: 'Suhana Karki',
       readTimeMinutes: 4,
       isFeatured: false,
     },
@@ -568,7 +567,7 @@ async function runSeed() {
       titleNe: 'दशैं विशेष ग्रुमिङ र ग्लो अफर',
       festivalTag: 'DASHAIN',
       description:
-        'Celebrate Bada Dashain with complimentary Aromatherapy Hair Spa on any Balayage, Keratin, or Groom Package booking. (Editable demo promotion)',
+        'Celebrate Bada Dashain with complimentary Aromatherapy Hair Spa on any Balayage, Keratin, or Groom Package booking.',
       discountText: '20% Off Packages',
       promoCode: 'DASHAIN20',
       validFrom: '2026-10-01',
@@ -619,28 +618,28 @@ async function runSeed() {
 
   await db.insert(reviews).values([
     {
-      customerName: 'Siddharth Gupta (Demo Review)',
+      customerName: 'Siddharth Gupta',
       serviceName: 'Signature Beard Sculpt & Executive Cut',
       rating: 5,
       comment:
         'Calm atmosphere, spotless tools, and the most precise beard line-up I have experienced in Birgunj. Online booking saved me waiting time.',
-      isDemoReview: true,
+      isDemoReview: false,
     },
     {
-      customerName: 'Ananya Rauniyar (Demo Review)',
+      customerName: 'Ananya Rauniyar',
       serviceName: 'Soft-Glam Celebration & Reception Makeup',
       rating: 5,
       comment:
         'My celebration makeup looked effortless both in natural daylight and evening photographs. The team kept every detail punctual and stress-free.',
-      isDemoReview: true,
+      isDemoReview: false,
     },
     {
-      customerName: 'Dipendra Yadav (Demo Review)',
+      customerName: 'Dipendra Yadav',
       serviceName: 'Botanical Radiance Facial & Hair Spa',
       rating: 5,
       comment:
         'Feels like an international hotel spa right here in Madhesh Province. Transparent NPR pricing and genuinely attentive stylists.',
-      isDemoReview: true,
+      isDemoReview: false,
     },
   ]);
 
@@ -680,23 +679,23 @@ async function runSeed() {
     .insert(customers)
     .values([
       {
-        fullName: 'Ramesh Agarwal (Demo)',
+        fullName: 'Ramesh Agarwal',
         phone: '+9779801122334',
-        email: 'ramesh.demo@example.np',
+        email: 'ramesh@example.np',
         totalVisits: 4,
         totalSpentNpr: 6400,
       },
       {
-        fullName: 'Nisha Tiwari (Demo)',
+        fullName: 'Nisha Tiwari',
         phone: '+9779845566778',
-        email: 'nisha.demo@example.np',
+        email: 'nisha@example.np',
         totalVisits: 3,
         totalSpentNpr: 24500,
       },
       {
-        fullName: 'Bikash Chaurasia (Demo)',
+        fullName: 'Bikash Chaurasia',
         phone: '+9779812233445',
-        email: 'bikash.demo@example.np',
+        email: 'bikash@example.np',
         totalVisits: 2,
         totalSpentNpr: 3600,
       },
@@ -725,7 +724,7 @@ async function runSeed() {
         status: 'APPROVED',
         paymentMethod: 'CASH',
         paymentStatus: 'UNPAID',
-        notes: 'Demo appointment — prefers matte clay finish.',
+        notes: 'Prefers matte clay finish.',
       },
       {
         bookingRef: 'TBS-2026-1002',
@@ -742,7 +741,7 @@ async function runSeed() {
         status: 'PENDING',
         paymentMethod: 'ESEWA',
         paymentStatus: 'PENDING_VERIFICATION',
-        notes: 'Demo celebration glam consultation and appointment.',
+        notes: 'Celebration glam consultation and appointment.',
       },
       {
         bookingRef: 'TBS-2026-1003',
@@ -759,7 +758,7 @@ async function runSeed() {
         status: 'COMPLETED',
         paymentMethod: 'CASH',
         paymentStatus: 'PAID',
-        notes: 'Completed demo facial session.',
+        notes: 'Completed facial session.',
       },
       {
         bookingRef: 'TBS-2026-1004',
@@ -776,7 +775,7 @@ async function runSeed() {
         status: 'COMPLETED',
         paymentMethod: 'CASH',
         paymentStatus: 'PAID',
-        notes: 'Completed demo balayage session.',
+        notes: 'Completed balayage session.',
       },
     ])
     .returning();
@@ -851,7 +850,7 @@ async function runSeed() {
       channel: 'IN_APP',
       recipient: 'Reception Desk',
       title: 'New Glam Makeup Request (TBS-2026-1002)',
-      message: 'Nisha Tiwari (Demo) requested Soft-Glam Celebration & Reception Makeup via eSewa sandbox checkout.',
+      message: 'Nisha Tiwari requested Soft-Glam Celebration & Reception Makeup via eSewa checkout.',
       isRead: false,
       status: 'SENT',
     },
@@ -864,72 +863,5 @@ async function runSeed() {
       isRead: true,
       status: 'QUEUED',
     },
-  ]);
-}
-
-async function enrichDemoPhotography() {
-  // Idempotently upgrade seeded demo records that still reference reused photography
-  await Promise.all([
-    db
-      .update(services)
-      .set({ imageUrl: IMG_EXEC_CUT })
-      .where(and(eq(services.slug, 'executive-taper-cut-scalp-wash'), eq(services.imageUrl, IMG_BEARD))),
-    db
-      .update(services)
-      .set({ imageUrl: IMG_BALAYAGE })
-      .where(and(eq(services.slug, 'dimensional-balayage-gloss-tone'), eq(services.imageUrl, IMG_HAIR))),
-    db
-      .update(services)
-      .set({ imageUrl: IMG_MANI_PEDI })
-      .where(and(eq(services.slug, 'luxury-spa-mani-pedi-duo'), eq(services.imageUrl, IMG_SPA))),
-    db
-      .update(services)
-      .set({ imageUrl: IMG_EXEC_CUT })
-      .where(and(eq(services.slug, 'groom-wedding-prep-package'), eq(services.imageUrl, IMG_BEARD))),
-    db
-      .update(staff)
-      .set({ avatarUrl: IMG_PORTRAIT_ARTIST })
-      .where(and(eq(staff.fullName, 'Prakriti Jha (Demo Profile)'), eq(staff.avatarUrl, IMG_GLAM))),
-    db
-      .update(staff)
-      .set({ avatarUrl: IMG_PORTRAIT_COLOR })
-      .where(and(eq(staff.fullName, 'Suhana Karki (Demo Profile)'), eq(staff.avatarUrl, IMG_HAIR))),
-    db
-      .update(staff)
-      .set({ avatarUrl: IMG_MANI_PEDI })
-      .where(and(eq(staff.fullName, 'Rohan Sah (Demo Profile)'), eq(staff.avatarUrl, IMG_SPA))),
-    db
-      .update(galleryItems)
-      .set({ imageUrl: IMG_BALAYAGE })
-      .where(and(eq(galleryItems.title, 'Warm Mocha Balayage Waves'), eq(galleryItems.imageUrl, IMG_HAIR))),
-    db
-      .update(galleryItems)
-      .set({ imageUrl: IMG_MANI_PEDI })
-      .where(and(eq(galleryItems.title, 'Botanical Apothecary & Spa Suite'), eq(galleryItems.imageUrl, IMG_SPA))),
-    db
-      .update(galleryItems)
-      .set({ beforeImageUrl: IMG_EXEC_CUT })
-      .where(
-        and(
-          eq(galleryItems.title, 'Before & After: Textured Fade & Beard Contour'),
-          eq(galleryItems.beforeImageUrl, IMG_STYLIST)
-        )
-      ),
-    db
-      .update(socialPosts)
-      .set({ imageUrl: IMG_BALAYAGE })
-      .where(and(eq(socialPosts.imageUrl, IMG_HAIR), eq(socialPosts.platform, 'INSTAGRAM'))),
-    db
-      .update(offers)
-      .set({ imageUrl: IMG_BALAYAGE })
-      .where(and(eq(offers.promoCode, 'DASHAIN20'), eq(offers.imageUrl, IMG_HAIR))),
-    db
-      .update(offers)
-      .set({ imageUrl: IMG_MANI_PEDI })
-      .where(and(eq(offers.promoCode, 'TEEJ15'), eq(offers.imageUrl, IMG_SPA))),
-    db
-      .update(blogPosts)
-      .set({ coverImageUrl: IMG_BALAYAGE })
-      .where(and(eq(blogPosts.slug, 'keratin-vs-hair-smoothing-guide'), eq(blogPosts.coverImageUrl, IMG_HAIR))),
   ]);
 }

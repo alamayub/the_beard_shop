@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '../../../src/db/index.ts';
 import { bookings, payments } from '../../../src/db/schema.ts';
 
-export type PaymentProvider = 'CASH' | 'ESEWA' | 'KHALTI' | 'FONEPAY';
+type PaymentProvider = 'CASH' | 'ESEWA' | 'KHALTI' | 'FONEPAY';
 
 export async function initiatePaymentSession(bookingRef: string, provider: PaymentProvider) {
   const rows = await db

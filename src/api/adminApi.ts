@@ -55,7 +55,7 @@ export interface AdminContactMessageRow {
   createdAt: string;
 }
 
-export interface AdminAuditLogRow {
+interface AdminAuditLogRow {
   id: number;
   actorEmail: string;
   actorRole: string;
